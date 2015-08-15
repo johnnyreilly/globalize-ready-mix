@@ -1,0 +1,29 @@
+{
+  "name": "globalize-ready-mix",
+  "version": "1.0.0",
+  "description": "A packager of Globalize libraries and locale data to ease consumption",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mix": "npm install && node mix.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnnyreilly/globalize-ready-mix.git"
+  },
+  "keywords": [
+    "Globalize",
+    "i18n"
+  ],
+  "author": "John Reilly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johnnyreilly/globalize-ready-mix/issues"
+  },
+  "homepage": "https://github.com/johnnyreilly/globalize-ready-mix#readme",
+  "dependencies": {
+    "cldr-data": "latest",
+    "globalize": "^1.0.0",
+    "yargs": "^3.16.1"
+  }
+}
