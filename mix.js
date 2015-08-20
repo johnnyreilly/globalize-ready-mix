@@ -11,8 +11,8 @@ if (argv.plural)       { globalizeOptions.plural = true; }
 if (argv.relativeTime) { globalizeOptions.relativeTime = true; }
 
 // mixer.getLocales(options.locations.cldrData);
-mixer.determineCldrDataRequired(globalizeOptions);
-mixer.determineGlobalizeModulesRequired(globalizeOptions);
+console.log(mixer.determineRequiredCldrData(globalizeOptions));
+mixer.determineRequiredGlobalizeModules(globalizeOptions);
 
 var plurals = require("cldr-data/supplemental/plurals");
 
@@ -23,8 +23,8 @@ var plurals = require("cldr-data/supplemental/plurals");
 // });
 
 
-console.log(plurals);
-var cldrData = require("cldr-data");
-console.log(cldrData.availableLocales);
-var x = require("cldr-data/main/" + cldrData.availableLocales[0] + "/ca-buddhist");
-console.log(x);
+// console.log(plurals);
+// var cldrData = require("cldr-data");
+// console.log(cldrData.availableLocales);
+// var x = require("cldr-data/main/" + cldrData.availableLocales[0] + "/ca-buddhist");
+// console.log(x);

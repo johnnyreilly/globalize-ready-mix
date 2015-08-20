@@ -36,37 +36,62 @@ var moduleDependencies = {
   ],
 
   'date': [
-    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/locale/ca-gregorian.json' },
-    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/locale/timeZoneNames.json' },
+    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/{locale}/ca-gregorian.json' },
+    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/{locale}/timeZoneNames.json' },
     { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/timeData.json' },
     { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/weekData.json' },
     { dependencyType: DEPENDENCY_TYPES.MODULE,      dependency: 'number' }
   ],
 
   'number': [
-    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/locale/numbers.json' },
-    { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/numberingSystems.json' }
+    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/{locale}/numbers.json' },
+    { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/numberingSystems.json' },
+    { dependencyType: DEPENDENCY_TYPES.MODULE,      dependency: 'core' }
   ],
 
   'plural': [
     { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/plurals.json' },
-    { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/ordinals.json' }
+    { dependencyType: DEPENDENCY_TYPES.SHARED_JSON, dependency: 'cldr/supplemental/ordinals.json' },
+    { dependencyType: DEPENDENCY_TYPES.MODULE,      dependency: 'core' }
   ],
 
   'relativeTime': [
-    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/locale/dateFields.json' },
+    { dependencyType: DEPENDENCY_TYPES.LOCALE_JSON, dependency: 'cldr/main/{locale}/dateFields.json' },
     { dependencyType: DEPENDENCY_TYPES.MODULE,      dependency: 'number' },
     { dependencyType: DEPENDENCY_TYPES.MODULE,      dependency: 'plural' }
   ]
 };
 
-function determineCldrDataRequired(globalizeOptions) {
-  Object.keys(globalizeOptions).forEach(function(dependency) {
-
+function determineRequiredCldrData(globalizeOptions) {
+  var modules = Object.keys(globalizeOptions);
+  modules.forEach(function(module) {
+    if (!moduleDependencies[module]) {
+      throw new TypeError('There is no \'' + module + '\' module');
+    }
   });
+
+  var jsonDeps = [];
+  modules.forEach(function (module) {
+    populateDependencies(module, jsonDeps);
+  });
+
+  return jsonDeps;
 }
 
-function determineGlobalizeModulesRequired(globalizeOptions){
+function populateDependencies(module, jsonDeps) {
+  var dependencies = moduleDependencies[module];
+  dependencies.forEach(function(dependency) {
+    if (dependency.dependencyType === DEPENDENCY_TYPES.MODULE) {
+      populateDependencies(dependency.dependency, jsonDeps);
+    }
+    else if (jsonDeps.indexOf(dependency.dependency) === -1) {
+      jsonDeps.push(dependency.dependency);
+    }
+  })
+  return jsonDeps;
+}
+
+function determineRequiredGlobalizeModules(globalizeOptions){
   var coreFiles = ['cldr.js', 'cldr/event.js', 'cldr/supplemental.js', 'globalize.js'];
   if (globalizeOptions.currency)     { coreFiles.push('globalize/currency.js'); }
   if (globalizeOptions.date)         { coreFiles.push('globalize/date.js'); }
@@ -88,7 +113,7 @@ function readDir(dir){
   });
 }
 
-module.exports = { getLocales: getLocales, determineGlobalizeModules: determineGlobalizeModules };
+module.exports = { getLocales: getLocales, determineRequiredCldrData: determineRequiredCldrData, determineRequiredGlobalizeModules: determineRequiredGlobalizeModules };
 
 // locales.forEach(function(locale){
 //   fs.readdirSync(path.join(localeDir, locale)).forEach(function(localeFile) {
